@@ -1,0 +1,26 @@
+resources:
+  jobs:
+    master_sales:
+      name: master_sales
+      tasks:
+        - task_key: get_metadata
+          sql_task:
+            query:
+              query_id: 92125fda-9b19-40ce-9503-f4c22558263e
+            warehouse_id: 4642e2b2e9c50fce
+        - task_key: ingest_bronze
+          depends_on:
+            - task_key: get_metadata
+          for_each_task:
+            inputs: "{{tasks.get_metadata.output.rows}}"
+            task:
+              task_key: ingest_bronze_iteration
+              notebook_task:
+                notebook_path: /Workspace/Users/balkibumen@gmail.com/project/bronze/ingest_bronze
+                base_parameters:
+                  raw_file: "{{input.raw_file}}"
+                  bronze_table: "{{input.bronze_table}}"
+                source: WORKSPACE
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
