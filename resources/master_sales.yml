@@ -6,8 +6,9 @@ resources:
       tasks:
         - task_key: get_metadata
           sql_task:
-            query:
-              query_id: 92125fda-9b19-40ce-9503-f4c22558263e
+            file:
+              path: ../project/bronze/get_metadata.sql
+              source: WORKSPACE
             warehouse_id: 4642e2b2e9c50fce
         - task_key: ingest_bronze
           depends_on:
