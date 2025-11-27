@@ -1,6 +1,6 @@
 # Databricks Asset Bundle configuration, more info here: https://docs.databricks.com/en/dev-tools/bundles/settings.html
 bundle:
-  name: "test"
+  name: "demo_day_1"
 
 include:
   - resources/*.yml
@@ -13,15 +13,3 @@ targets:
     default: true
     workspace:
       host: https://dbc-d484ce66-a9d5.cloud.databricks.com
-
-  # The 'prod' target, used for production deployment.
-  prod:
-    mode: production
-    workspace:
-      host: https://dbc-d484ce66-a9d5.cloud.databricks.com
-      # We always use /Users/balkibumen@gmail.com for all resources to make sure we only have a single copy.
-      root_path: /Users/balkibumen@gmail.com/.bundle/${bundle.name}/${bundle.target}
-    run_as:
-      # This runs as balkibumen@gmail.com in production. We could also use a service principal here,
-      # see https://docs.databricks.com/dev-tools/bundles/permissions.html.
-      user_name: balkibumen@gmail.com

@@ -1,0 +1,47 @@
+resources:
+  jobs:
+    master_sales:
+      name: master_sales
+      max_concurrent_runs: 4
+      tasks:
+        - task_key: get_metadata
+          sql_task:
+            query:
+              query_id: 92125fda-9b19-40ce-9503-f4c22558263e
+            warehouse_id: 4642e2b2e9c50fce
+        - task_key: ingest_bronze
+          depends_on:
+            - task_key: get_metadata
+          for_each_task:
+            inputs: "{{tasks.get_metadata.output.rows}}"
+            task:
+              task_key: ingest_bronze_iteration
+              notebook_task:
+                notebook_path: ../project/bronze/ingest_bronze.ipynb
+                base_parameters:
+                  bronze_table: "{{input.bronze_table}}"
+                  raw_file: "{{input.raw_file}}"
+                source: WORKSPACE
+        - task_key: silver_customers
+          depends_on:
+            - task_key: ingest_bronze
+          notebook_task:
+            notebook_path: ../project/silver/silver_customers.ipynb
+            source: WORKSPACE
+        - task_key: silver_products
+          depends_on:
+            - task_key: ingest_bronze
+          notebook_task:
+            notebook_path: ../project/silver/silver_products.ipynb
+            source: WORKSPACE
+        - task_key: silver_sales
+          depends_on:
+            - task_key: ingest_bronze
+          notebook_task:
+            notebook_path: ../project/silver/silver_sales.ipynb
+            source: WORKSPACE
+      tags:
+        dev: balkibumen
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
